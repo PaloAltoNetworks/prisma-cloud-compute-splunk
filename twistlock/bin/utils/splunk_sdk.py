@@ -17,7 +17,8 @@ def get_credentials(session_key):
             ["storage", "passwords"], namespace="twistlock",
             owner="nobody", sessionKey=session_key)
     except Exception as e:
-        logger.error("Failed getting credentials from Splunk: %r", e)
+        logger.error("Failed getting Compute credentials from Splunk: %r", e)
+        sys.exit(1)
 
     credentials = []
     for item in entities.values():

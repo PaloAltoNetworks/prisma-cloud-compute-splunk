@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+### Added
+- Additional logging around authentication.
+
 ## Version 4.1.0 - 2021-11-02
 This is the first release in the new repository.
 ### Changed

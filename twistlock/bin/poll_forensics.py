@@ -114,6 +114,10 @@ def main():
     logger.info("Prisma Cloud Compute poll_forensics script started.")
     if (os.path.isfile(incidents_file)):
         session_key = sys.stdin.readline().strip()
+        if len(session_key) == 0:
+            logger.error("Did not receive session key from Splunk. Exiting.")
+            sys.exit(1)
+
         configs = generate_configs(session_key)
 
         for config in configs:

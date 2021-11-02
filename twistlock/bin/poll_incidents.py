@@ -191,6 +191,10 @@ def get_incidents(console_name, console_url, project_list, auth_token):
 def main():
     logger.info("Prisma Cloud Compute poll_incidents script started.")
     session_key = sys.stdin.readline().strip()
+    if len(session_key) == 0:
+        logger.error("Did not receive session key from Splunk. Exiting.")
+        sys.exit(1)
+
     configs = generate_configs(session_key)
 
     for config in configs:

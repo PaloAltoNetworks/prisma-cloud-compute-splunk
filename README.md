@@ -51,6 +51,13 @@ If data is still not being ingested, check `$SPLUNK_HOME/var/log/splunk/splunkd.
 index="_internal" source="/opt/splunk/var/log/splunk/splunkd.log" ("poll_incidents.py" OR "poll_forensics.py")
 ```
 
+## Screenshots
+![image of the incident explorer](images/incident_explorer.png)
+
+![image of the dashboard](images/dashboard.png)
+
+![image of a search](images/search.png)
+
 ## Support
 This app is released with a "best effort" support policy.
 We do not provide technical support or help in using or troubleshooting this app through our normal support options.

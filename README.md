@@ -1,15 +1,16 @@
 # Prisma Cloud Compute Splunk App
 
-**Important**: This app is delivered as-is and without guaranteed support from Palo Alto Networks.
-
 The Prisma Cloud Compute Splunk App allows high priority security incidents from Prisma Cloud Compute to be sampled by Splunk on a user-defined interval and provides in-depth forensic data for incident analysis and response.
 The app adds two main components to your Splunk deployment: scripted data inputs that make use of your Prisma Cloud Compute API to pull incidents and forensics and a sample Splunk dashboard that presents that data.
 
 _Note: For bringing in data besides incidents and forensics, please use syslog or webhooks._
 
+## Important news
+[2021-11-02] The app does **not** support fetching data from 21.08 or newer Consoles ([#1](https://github.com/PaloAltoNetworks/prisma-cloud-compute-splunk/issues/1)).
+
 ## Getting the app
 ### GitHub
-Download the latest app tarball (`pcc-splunk-app-*.tar.gz`) from the [PaloAltoNetworks/prisma-cloud-compute-splunk repository](https://github.com/PaloAltoNetworks/prisma-cloud-compute-splunk).
+Download the latest app tarball (`pcc-splunk-app-*.tar.gz`) from its [release page](https://github.com/PaloAltoNetworks/prisma-cloud-compute-splunk/releases/latest).
 
 ### Splunkbase
 Download the latest app tarball from [Splunkbase](https://splunkbase.splunk.com/app/4555).
@@ -49,3 +50,10 @@ If data is still not being ingested, check `$SPLUNK_HOME/var/log/splunk/splunkd.
 ```
 index="_internal" source="/opt/splunk/var/log/splunk/splunkd.log" ("poll_incidents.py" OR "poll_forensics.py")
 ```
+
+## Support
+This app is released with a "best effort" support policy.
+We do not provide technical support or help in using or troubleshooting this app through our normal support options.
+It should be seen as community-supported, and Palo Alto Networks will contribute when possible.
+
+User contributions and feedback are welcome.

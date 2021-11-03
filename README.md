@@ -6,7 +6,6 @@ The app adds two main components to your Splunk deployment: scripted data inputs
 _Note: For bringing in data besides incidents and forensics, please use syslog or webhooks._
 
 ## Important news
-[2021-11-02] The app does **not** support fetching data from 21.08 or newer Consoles ([#1](https://github.com/PaloAltoNetworks/prisma-cloud-compute-splunk/issues/1)).
 
 ## Getting the app
 ### GitHub

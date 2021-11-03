@@ -68,15 +68,19 @@ def get_projects(console_url, auth_token):
 
     # Address case in which user has permission to all projects
     # Otherwise Central Console would not be added to projects list
-    if jwt_payload["permissions"][0]["project"] == "Central Console":
-        projects.append("Central Console")
+    if "permissions" in jwt_payload:
+        if jwt_payload["permissions"][0]["project"] == "Central Console":
+            projects.append("Central Console")
 
-    endpoint = "/api/v1/current/projects"
-    # jwt_payload["permissions"][0]["project"] ensures that the
-    # project specified is one the user is permitted to access
-    params = {"project": jwt_payload["permissions"][0]["project"]}
+        # jwt_payload["permissions"][0]["project"] ensures that the
+        # project specified is one the user is permitted to access
+        params = {"project": jwt_payload["permissions"][0]["project"]}
+    else:
+        projects.append("Central Console")
+        return projects
+
     headers = {"Authorization": "Bearer " + auth_token, "Accept": "application/json"}
-    request_url = slash_join(console_url, endpoint)
+    request_url = slash_join(console_url, "/api/v1/current/projects")
 
     try:
         response = requests.get(request_url, params=params, headers=headers)

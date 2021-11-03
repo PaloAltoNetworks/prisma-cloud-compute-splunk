@@ -1,8 +1,12 @@
 # Changelog
 
 ## Unreleased
+
+## Version 4.1.1 - 2021-11-03
 ### Added
 - Additional logging around authentication.
+### Fixed
+- Fixed failure to run if projects is disabled.
 
 ## Version 4.1.0 - 2021-11-02
 This is the first release in the new repository.

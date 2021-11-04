@@ -22,6 +22,7 @@ In the Splunk UI, click on the Apps dropdown, click "Find More Apps", then searc
 2. Navigate to the setup page if you aren't guided there.
 3. Fill out the setup form and click "Complete setup."
 Field descriptions are on the setup page.
+4. If on Windows, update `$SPLUNK_HOME\etc\twistlock\default\inputs.conf` according to the instructions at the top of the file.
 4. Enable `poll_incidents.py` and `poll_forensics.py` at **Settings > Data inputs > Scripts** in Splunk.
 5. (Optional) Adjust the schedule as needed. By default, the `poll_forensics.py` script runs 2 minutes after `poll_incidents.py` and both scripts will run every 5 minutes.
 

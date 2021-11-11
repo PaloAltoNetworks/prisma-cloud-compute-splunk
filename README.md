@@ -59,8 +59,5 @@ index="_internal" source="/opt/splunk/var/log/splunk/splunkd.log" ("poll_inciden
 ![image of a search](images/search.png)
 
 ## Support
-This app is released with a "best effort" support policy.
-We do not provide technical support or help in using or troubleshooting this app through our normal support options.
-It should be seen as community-supported, and Palo Alto Networks will contribute when possible.
 
-User contributions and feedback are welcome.
+Please read [SUPPORT.md](SUPPORT.md) for details on how to get support for this project.

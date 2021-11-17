@@ -92,6 +92,7 @@ def get_projects(console_url, auth_token):
 
     if response_json is not None:
         for item in response_json:
-            projects.append(item["_id"])
+            if item["connected"]:
+                projects.append(item["_id"])
 
     return projects

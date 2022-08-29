@@ -32,13 +32,18 @@ def get_credentials(session_key):
 
 
 def get_config_stanza(realm, session_key):
+    logger.info("Realm: %s", realm)
+
     try:
         entities = entity.getEntities(
             ["configs", "conf-twistlock", realm], namespace="twistlock",
             owner="nobody", sessionKey=session_key)
+        logger.info("Entities: %s", entities)
         conf_values = entities[realm]
     except Exception as e:
         logger.error("Failed getting configuration from Splunk: %r", e)
+        stanza = "error"
+        return stanza
 
     stanza = {
         "console_addr": conf_values["console_addr"],
@@ -55,9 +60,16 @@ def get_config_stanza(realm, session_key):
 
 def generate_configs(session_key):
     configs = []
+    err = "error"
     credentials = get_credentials(session_key)
+    """logger.info("Creds: %s", credentials)"""
+
     for credential in credentials:
+        logger.info("Realm1: %s", credential["realm"])
         stanza = get_config_stanza(credential["realm"], session_key)
+        if (stanza is err):
+            continue
         stanza.update(credential)
         configs.append(stanza)
+
     return configs

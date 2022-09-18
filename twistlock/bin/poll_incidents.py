@@ -12,6 +12,9 @@ import re
 import sys
 
 import requests
+import datetime
+import dateutil.parser
+import dateutil.tz
 
 from utils.compute import get_auth_token, get_projects, slash_join
 from utils.splunk_sdk import generate_configs
@@ -57,12 +60,14 @@ def get_incidents(console_name, console_url, project_list, auth_token):
         if os.path.isfile(checkpoint_file):
             with open(checkpoint_file) as f:
                 try:
-                    last_serialNum_indexed = int(f.readline())
+                    last_date_indexed = dateutil.parser.parse(f.readline())
+                    last_datestring_indexed = str(f.readline())
                 except Exception as err:
                     logger.error("Unexpected content in checkpoint file. Exiting.")
                     sys.exit(err)
         else:
-            last_serialNum_indexed = 0
+            last_date_indexed = datetime.datetime.now(dateutil.tz.UTC) - datetime.timedelta(days=90)
+            last_datestring_indexed=""
 
         # Make a call to get count of incidents
         params = {
@@ -86,7 +91,7 @@ def get_incidents(console_name, console_url, project_list, auth_token):
             logger.warning("No incidents to ingest for %s. Continuing.", project)
             continue
 
-        highest_serialNum = 0
+        oldest_datetime = datetime.datetime.now(dateutil.tz.UTC) - datetime.timedelta(days=90)
         # Use that count to create offsets
         # Example: 85 incidents
         # offset: 0, limit: 50 = 1-50
@@ -98,6 +103,7 @@ def get_incidents(console_name, console_url, project_list, auth_token):
                 "acknowledged": "false",
                 "limit": request_limit,
                 "offset": request_offset,
+                "from": last_datestring_indexed,
             }
             joined_params = "&".join("{0}={1}".format(k, v) for k, v in params.items())
 
@@ -120,9 +126,9 @@ def get_incidents(console_name, console_url, project_list, auth_token):
                 break
 
             for incident in response_json:
-                current_serialNum = incident["serialNum"]
-                # Print only new incidents for indexing in Splunk
-                if current_serialNum > last_serialNum_indexed:
+                current_datetime = dateutil.parser.parse(incident["time"])
+                # Print only new incidents for indexing in Splunk             
+                if current_datetime > last_date_indexed:
                     # Add console and project keys for associating in Splunk
                     incident["console"] = console_name
                     incident["project"] = project
@@ -156,14 +162,14 @@ def get_incidents(console_name, console_url, project_list, auth_token):
                     }
                 if incident_info not in current_incidents:
                     current_incidents.append(incident_info)
-
-                if current_serialNum > highest_serialNum:
-                    highest_serialNum = current_serialNum
+ 
+                if current_datetime > oldest_datetime:
+                    oldest_datetime = current_datetime
 
         # Update the checkpoint file
-        if highest_serialNum > last_serialNum_indexed:
+        if oldest_datetime > last_date_indexed:
             with open(checkpoint_file, "w") as f:
-                f.write(str(highest_serialNum))
+                f.write(str(oldest_datetime))
         else:
             logger.info(
                 "No new incidents to ingest from Console: %s, project: %s. "
@@ -197,6 +203,10 @@ def main():
 
     configs = generate_configs(session_key)
 
+    #debug lines for session/pasword issues
+    #logger.info("Session Key: %s", session_key)
+    #logger.info("Configs: %s", configs)
+    
     for config in configs:
         if not (config["console_addr"] and config["username"] and config["password"]):
             logger.error(

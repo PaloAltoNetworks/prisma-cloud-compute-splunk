@@ -67,6 +67,7 @@ def get_incidents(console_name, console_url, project_list, auth_token):
                     sys.exit(err)
         else:
             last_date_indexed = datetime.datetime.now(dateutil.tz.UTC) - datetime.timedelta(days=90)
+            last_datestring_indexed=""
 
         # Make a call to get count of incidents
         params = {

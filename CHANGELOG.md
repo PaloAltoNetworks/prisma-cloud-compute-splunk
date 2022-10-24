@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## Version 4.1.5 - 2022-10-24
+### Added
+- Setup field to select cutoff date of incidents. EX: User can now choose to pull only the last 90 days of incidents.
+### Fixed
+- Fixed failure to pull incidents due to API change.
+
 ## Version 4.1.1 - 2021-11-03
 ### Added
 - Additional logging around authentication.

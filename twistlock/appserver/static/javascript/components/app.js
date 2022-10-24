@@ -11,6 +11,7 @@ define([
     projects: 'Projects',
     username: 'Username or Access Key',
     password: 'Password or Secret Key',
+    days: 'Incident date look back in days'
   }
 
   class SetupPage extends react.Component {
@@ -22,6 +23,7 @@ define([
         projects: '',
         username: '',
         password: '',
+        days: '90',
       };
       this.handleChange = this.handleChange.bind(this);
       this.handleSubmit = this.handleSubmit.bind(this);
@@ -58,6 +60,10 @@ define([
           e('div', { className: 'field password' }, [
             e('label', { for: 'password' }, input_labels['password']),
             e('input', { type: 'password', name: 'password', value: this.state.password, onChange: this.handleChange, required: true }),
+          ]),
+          e('div', { className: 'field days' }, [
+            e('label', { for: 'days' }, input_labels['days']),
+            e('input', { type: 'number', name: 'days', value: this.state.days, onChange: this.handleChange, required: false }),
           ]),
           e('div', null, [
             e('button', { name: 'setup_button' }, 'Complete setup'),
@@ -103,6 +109,8 @@ define([
               e('a', { href: 'https://docs.paloaltonetworks.com/prisma/prisma-cloud/prisma-cloud-admin-compute/authentication/access_keys.html' }, 'secret key'),
               '.',
             ]),
+            e('h2', { className: 'underline' }, input_labels['days']),
+            e('p', null, 'The time in days to look back for incidents.'),
           ]),
         ]),
       ]);

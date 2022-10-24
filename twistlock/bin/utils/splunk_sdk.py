@@ -43,6 +43,7 @@ def get_config_stanza(realm, session_key):
     stanza = {
         "console_addr": conf_values["console_addr"],
         "username": conf_values["username"],
+        "days": conf_values["days"]
     }
 
     if "projects" in conf_values and conf_values["projects"] is not None:
@@ -51,7 +52,6 @@ def get_config_stanza(realm, session_key):
         stanza["projects"] = "all"
 
     return stanza
-
 
 def generate_configs(session_key):
     configs = []

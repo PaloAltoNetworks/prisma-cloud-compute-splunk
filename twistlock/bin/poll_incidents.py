@@ -1,5 +1,4 @@
 """Collects incidents from a Prisma Cloud Compute Console.
-
 This script is intended to be used as a Splunk input, so it is not tested
 outside of Splunk. Please see the README.md in the app's root directory for
 setup instructions.
@@ -12,6 +11,9 @@ import re
 import sys
 
 import requests
+import datetime
+import dateutil.parser
+import dateutil.tz
 
 from utils.compute import get_auth_token, get_projects, slash_join
 from utils.splunk_sdk import generate_configs
@@ -34,7 +36,7 @@ except OSError:
         raise
 
 
-def get_incidents(console_name, console_url, project_list, auth_token):
+def get_incidents(console_name, console_url, project_list, auth_token, look_back_days):
     endpoint = "/api/v1/audits/incidents"
     headers = {
         "Authorization": "Bearer " + auth_token,
@@ -57,12 +59,14 @@ def get_incidents(console_name, console_url, project_list, auth_token):
         if os.path.isfile(checkpoint_file):
             with open(checkpoint_file) as f:
                 try:
-                    last_serialNum_indexed = int(f.readline())
+                    last_date_indexed = dateutil.parser.parse(f.readline())
+                    last_datestring_indexed = str(f.readline())
                 except Exception as err:
                     logger.error("Unexpected content in checkpoint file. Exiting.")
                     sys.exit(err)
         else:
-            last_serialNum_indexed = 0
+            last_date_indexed = datetime.datetime.now(dateutil.tz.UTC) - datetime.timedelta(days=look_back_days)
+            last_datestring_indexed=""
 
         # Make a call to get count of incidents
         params = {
@@ -86,7 +90,7 @@ def get_incidents(console_name, console_url, project_list, auth_token):
             logger.warning("No incidents to ingest for %s. Continuing.", project)
             continue
 
-        highest_serialNum = 0
+        oldest_datetime = datetime.datetime.now(dateutil.tz.UTC) - datetime.timedelta(days=look_back_days)
         # Use that count to create offsets
         # Example: 85 incidents
         # offset: 0, limit: 50 = 1-50
@@ -98,6 +102,7 @@ def get_incidents(console_name, console_url, project_list, auth_token):
                 "acknowledged": "false",
                 "limit": request_limit,
                 "offset": request_offset,
+                "from": last_datestring_indexed,
             }
             joined_params = "&".join("{0}={1}".format(k, v) for k, v in params.items())
 
@@ -120,9 +125,9 @@ def get_incidents(console_name, console_url, project_list, auth_token):
                 break
 
             for incident in response_json:
-                current_serialNum = incident["serialNum"]
-                # Print only new incidents for indexing in Splunk
-                if current_serialNum > last_serialNum_indexed:
+                current_datetime = dateutil.parser.parse(incident["time"])
+                # Print only new incidents for indexing in Splunk             
+                if current_datetime > last_date_indexed:
                     # Add console and project keys for associating in Splunk
                     incident["console"] = console_name
                     incident["project"] = project
@@ -142,6 +147,7 @@ def get_incidents(console_name, console_url, project_list, auth_token):
                         "type": "container",
                         "attempted": False,
                         "poll_attempts": 0,
+                        "hostname": incident["hostname"]
                     }
                 # else => host
                 else:
@@ -149,21 +155,22 @@ def get_incidents(console_name, console_url, project_list, auth_token):
                         "console": console_name,
                         "project": project,
                         "_id": incident["_id"],
-                        "profileID": incident["hostname"],
+                        "profileID": incident["profileID"],
                         "type": "host",
                         "attempted": False,
                         "poll_attempts": 0,
+                        "hostname": incident["hostname"]
                     }
                 if incident_info not in current_incidents:
                     current_incidents.append(incident_info)
-
-                if current_serialNum > highest_serialNum:
-                    highest_serialNum = current_serialNum
+ 
+                if current_datetime > oldest_datetime:
+                    oldest_datetime = current_datetime
 
         # Update the checkpoint file
-        if highest_serialNum > last_serialNum_indexed:
+        if oldest_datetime > last_date_indexed:
             with open(checkpoint_file, "w") as f:
-                f.write(str(highest_serialNum))
+                f.write(str(oldest_datetime))
         else:
             logger.info(
                 "No new incidents to ingest from Console: %s, project: %s. "
@@ -197,6 +204,10 @@ def main():
 
     configs = generate_configs(session_key)
 
+    #debug lines for session/pasword issues
+    #logger.info("Session Key: %s", session_key)
+    #logger.info("Configs: %s", configs)
+    
     for config in configs:
         if not (config["console_addr"] and config["username"] and config["password"]):
             logger.error(
@@ -208,6 +219,7 @@ def main():
         console_url = config["console_addr"]
         username = config["username"]
         password = config["password"]
+        look_back_days = int(config["days"])
 
         auth_token = get_auth_token(console_url, username, password)
 
@@ -225,7 +237,7 @@ def main():
                 logger.error("Bad projects value: %s. Exiting.", config["projects"])
                 sys.exit(1)
 
-        get_incidents(console_name, console_url, projects, auth_token)
+        get_incidents(console_name, console_url, projects, auth_token, look_back_days)
     logger.info("Prisma Cloud Compute poll_incidents script ending.")
 
 

@@ -65,11 +65,15 @@ def get_forensics(console_name, console_url, auth_token):
                 "project": incident["project"],
                 "limit": request_limit,
                 "incidentID": incident["_id"],
+                'hostname': incident['hostname'],
+                "incidentID": incident['_id']
             }
             joined_params = "&".join("{0}={1}".format(k, v) for k, v in params.items())
+
             request_url = slash_join(
                 console_url, endpoint, incident["type"],
                 incident["profileID"], "forensic")
+                
             try:
                 response = requests.get(
                     request_url, params=joined_params, headers=headers)

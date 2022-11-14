@@ -32,6 +32,7 @@ def get_credentials(session_key):
 
 
 def get_config_stanza(realm, session_key):
+    conf_values = {}
     try:
         entities = entity.getEntities(
             ["configs", "conf-twistlock", realm], namespace="twistlock",

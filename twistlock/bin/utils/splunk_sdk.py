@@ -10,6 +10,7 @@ handler = logging.StreamHandler(stream=sys.stderr)
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
+err_code = 'error'
 
 def get_credentials(session_key):
     try:
@@ -40,6 +41,8 @@ def get_config_stanza(realm, session_key):
         conf_values = entities[realm]
     except Exception as e:
         logger.error("Failed getting configuration from Splunk: %r", e)
+        logger.error(f'REALM: {realm}')
+        return err_code
 
     stanza = {
         "console_addr": conf_values["console_addr"],
@@ -56,9 +59,13 @@ def get_config_stanza(realm, session_key):
 
 def generate_configs(session_key):
     configs = []
+    err = err_code
     credentials = get_credentials(session_key)
     for credential in credentials:
         stanza = get_config_stanza(credential["realm"], session_key)
+        if (stanza is err):#Hot fix for invalid realm in namespace
+            continue
+
         stanza.update(credential)
         configs.append(stanza)
     return configs

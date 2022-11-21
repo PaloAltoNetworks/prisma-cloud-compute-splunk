@@ -38,6 +38,7 @@ Whenever you complete the setup, `local/twistlock.conf` and `local/passwords.con
 The passwords are stored and accessed using [Splunk's encrypted password storage APIs](https://www.splunk.com/en_us/blog/security/storing-encrypted-credentials.html).
 
 ## Troubleshooting
+### General
 If incidents and/or forensics are not being ingested into Splunk, please verify the following:
 
 - You have at least one incident at **Monitor > Runtime > Incident Explorer** under the "Active" tab.
@@ -50,6 +51,9 @@ If data is still not being ingested, check `$SPLUNK_HOME/var/log/splunk/splunkd.
 ```
 index="_internal" source="/opt/splunk/var/log/splunk/splunkd.log" ("poll_incidents.py" OR "poll_forensics.py")
 ```
+### Updating To Latest Version
+If new features or bug fixes are not appearing in your environment after updating the app in place, completely delete the Prisma Cloud Compute application out of Splunk before reinstalling the app.
+
 
 ## Screenshots
 ![image of the incident explorer](images/incident_explorer.png)

@@ -77,7 +77,7 @@ def get_incidents(console_name, console_url, project_list, auth_token, look_back
         }
         joined_params = "&".join("{0}={1}".format(k, v) for k, v in params.items())
         try:
-            response = requests.get(request_url, params=joined_params, headers=headers)
+            response = requests.get(request_url, params=joined_params, headers=headers, verify=True)
             response.raise_for_status()
             total_count = int(response.headers["Total-Count"])
         except (requests.exceptions.RequestException, ValueError) as req_err:
@@ -108,7 +108,7 @@ def get_incidents(console_name, console_url, project_list, auth_token, look_back
 
             try:
                 response = requests.get(
-                    request_url, params=joined_params, headers=headers)
+                    request_url, params=joined_params, headers=headers, verify=True)
                 response.raise_for_status()
                 response_json = response.json()
             except (requests.exceptions.RequestException, ValueError) as req_err:

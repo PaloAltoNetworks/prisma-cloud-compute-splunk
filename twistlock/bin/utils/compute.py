@@ -39,7 +39,7 @@ def get_auth_token(console_url, username, password):
 
     try:
         response = requests.post(
-            request_url, params=params, headers=headers, data=json.dumps(data))
+            request_url, params=params, headers=headers, data=json.dumps(data), verify=True)
         response.raise_for_status()
         response_json = response.json()
     except (requests.exceptions.RequestException, ValueError) as req_err:
@@ -83,7 +83,7 @@ def get_projects(console_url, auth_token):
     request_url = slash_join(console_url, "/api/v1/current/projects")
 
     try:
-        response = requests.get(request_url, params=params, headers=headers)
+        response = requests.get(request_url, params=params, headers=headers, verify=True)
         response.raise_for_status()
         response_json = response.json()
     except (requests.exceptions.RequestException, ValueError) as req_err:

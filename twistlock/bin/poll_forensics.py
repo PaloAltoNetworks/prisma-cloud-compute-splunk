@@ -76,7 +76,7 @@ def get_forensics(console_name, console_url, auth_token):
                 
             try:
                 response = requests.get(
-                    request_url, params=joined_params, headers=headers)
+                    request_url, params=joined_params, headers=headers, verify=True)
                 response.raise_for_status()
                 response_json = response.json()
                 if response_json is not None:

@@ -37,6 +37,11 @@ def get_auth_token(console_url, username, password):
     }
     request_url = slash_join(console_url, endpoint)
 
+    ### Enforce HTTPS Requests - Splunk Cloud
+    if not request_url.startswith('https'):
+        logger.error('Non-HTTPS connection detected. Exiting.')
+        sys.exit()
+
     try:
         response = requests.post(
             request_url, params=params, headers=headers, data=json.dumps(data), verify=True)
@@ -82,6 +87,11 @@ def get_projects(console_url, auth_token):
     headers = {"Authorization": "Bearer " + auth_token, "Accept": "application/json"}
     request_url = slash_join(console_url, "/api/v1/current/projects")
 
+    ### Enforce HTTPS Requests - Splunk Cloud
+    if not request_url.startswith('https'):
+                logger.error('Non-HTTPS connection detected. Exiting.')
+                sys.exit()
+                
     try:
         response = requests.get(request_url, params=params, headers=headers, verify=True)
         response.raise_for_status()

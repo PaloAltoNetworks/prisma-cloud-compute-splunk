@@ -44,6 +44,12 @@ def get_incidents(console_name, console_url, project_list, auth_token, look_back
     }
     request_limit = 50
     request_url = slash_join(console_url, endpoint)
+
+    ### Enforce HTTPS Requests - Splunk Cloud - Addressing at every instance where request is used. Overkill but makes code review easier
+    if not request_url.startswith('https'):
+        logger.error('Non-HTTPS connection detected. Exiting.')
+        sys.exit()
+        
     current_incidents = []
 
     for project in project_list:
@@ -76,6 +82,12 @@ def get_incidents(console_name, console_url, project_list, auth_token, look_back
             "offset": 0,
         }
         joined_params = "&".join("{0}={1}".format(k, v) for k, v in params.items())
+
+        ### Enforce HTTPS Requests - Splunk Cloud - Addressing at every instance where request is used. Overkill but makes code review easier
+        if not request_url.startswith('https'):
+            logger.error('Non-HTTPS connection detected. Exiting.')
+            sys.exit()
+
         try:
             response = requests.get(request_url, params=joined_params, headers=headers, verify=True)
             response.raise_for_status()
@@ -105,6 +117,11 @@ def get_incidents(console_name, console_url, project_list, auth_token, look_back
                 "from": last_datestring_indexed,
             }
             joined_params = "&".join("{0}={1}".format(k, v) for k, v in params.items())
+
+            ### Enforce HTTPS Requests - Splunk Cloud - Addressing at every instance where request is used. Overkill but makes code review easier
+            if not request_url.startswith('https'):
+                logger.error('Non-HTTPS connection detected. Exiting.')
+                sys.exit()
 
             try:
                 response = requests.get(

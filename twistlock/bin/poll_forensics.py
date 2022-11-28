@@ -73,6 +73,11 @@ def get_forensics(console_name, console_url, auth_token):
             request_url = slash_join(
                 console_url, endpoint, incident["type"],
                 incident["profileID"], "forensic")
+
+            ### Enforce HTTPS Requests - Splunk Cloud
+            if not request_url.startswith('https'):
+                logger.error('Non-HTTPS connection detected. Exiting.')
+                sys.exit()
                 
             try:
                 response = requests.get(

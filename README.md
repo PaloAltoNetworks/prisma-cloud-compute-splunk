@@ -54,6 +54,8 @@ index="_internal" source="/opt/splunk/var/log/splunk/splunkd.log" ("poll_inciden
 ### Updating To Latest Version
 If new features or bug fixes are not appearing in your environment after updating the app in place, completely delete the Prisma Cloud Compute application out of Splunk before reinstalling the app.
 
+Some users will also have to force clear their browswers cache in order to see changes to the App Setup Page in splunk.
+
 
 ## Screenshots
 ![image of the incident explorer](images/incident_explorer.png)

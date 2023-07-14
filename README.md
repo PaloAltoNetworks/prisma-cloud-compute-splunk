@@ -1,5 +1,11 @@
 # Prisma Cloud Compute Splunk App
 
+---
+
+**IMPORTANT: Please see [SUPPORT.md](SUPPORT.md) for the official support policy for the contents of this repository.**
+
+---
+
 The Prisma Cloud Compute Splunk App allows high priority security incidents from Prisma Cloud Compute to be sampled by Splunk on a user-defined interval and provides in-depth forensic data for incident analysis and response.
 The app adds two main components to your Splunk deployment: scripted data inputs that make use of your Prisma Cloud Compute API to pull incidents and forensics and a sample Splunk dashboard that presents that data.
 
